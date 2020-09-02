@@ -11,9 +11,9 @@ pipeline {
 
     environment {
         //TODO: Edit these vars as per your env
-        DEV_PROJECT = "youruser-books-dev"
-        STAGE_PROJECT = "youruser-books-stage"
-        APP_GIT_URL = "https://github.com/youruser/DO288-apps"
+        DEV_PROJECT = "alessiosaltarin-books-dev"
+        STAGE_PROJECT = "alessiosaltarin-books-stage"
+        APP_GIT_URL = "https://github.com/guildenstern70/DO288-apps"
         NEXUS_SERVER = "nexus-common.apps.ocp-eu2.prod.nextcle.com/repository/nodejs"
 
         // DO NOT CHANGE THE GLOBAL VARS BELOW THIS LINE
@@ -56,7 +56,6 @@ pipeline {
                         oc delete all -l app=${APP_NAME}
                         sleep 5
                    '''
-
                 echo '### Creating a new app in DEV env ###'
                 sh '''
                         oc project ${DEV_PROJECT}
@@ -107,7 +106,8 @@ pipeline {
                 }
                 script {
                     openshift.withCluster() {
-                    openshift.tag("${DEV_PROJECT}/books:latest", "${STAGE_PROJECT}/books:stage")
+                        openshift.tag("${DEV_PROJECT}/books:latest", "${STAGE_PROJECT}/books:stage")
+                    }
                 }
             }
         }
@@ -133,7 +133,6 @@ pipeline {
         stage('Wait for deployment in Staging') {
             steps {
                 sh "oc get route ${APP_NAME} -n ${STAGE_PROJECT} -o jsonpath='{ .spec.host }' --loglevel=4 > routehost"
-
                 script {
                     routeHost = readFile('routehost').trim()
                     openshift.withCluster() {
