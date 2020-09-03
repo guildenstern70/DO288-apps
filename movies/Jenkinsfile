@@ -1,6 +1,5 @@
 pipeline {
     options {
-        // set a timeout of 60 minutes for this pipeline
         timeout(time: 60, unit: 'MINUTES')
     }
     agent {
@@ -80,9 +79,8 @@ pipeline {
                     }
                 }
                 sh '''
-                        oc project ${DEV_PROJECT}
-                        oc new-app --name movies redhat-openjdk18-openshift~${APP_GIT_URL} --context-dir ${APP_NAME}
-                        oc expose svc/${APP_NAME}
+                        oc new-app ${APP_NAME}:latest -n ${DEV_PROJECT}
+                        oc expose svc/${APP_NAME} -n ${DEV_PROJECT}
                 '''
             }
         }
