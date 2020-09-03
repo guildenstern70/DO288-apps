@@ -86,12 +86,14 @@ pipeline {
         }
 
         stage('Wait for deployment in DEV env') {
-            openshift.withProject( "${DEV_PROJECT}" ) {
+            steps {
+                openshift.withProject( "${DEV_PROJECT}" ) {
 
                 def deployment = openshift.selector("dc", "${APP_NAME}").rollout()
                 openshift.selector("dc", "${APP_NAME}").related('pods').untilEach(1) {
                             return (it.object().status.phase == "Running")
                     }
+                }
             }
         }
 
